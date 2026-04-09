@@ -1,0 +1,140 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3199457730867805750
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2797963642694054760}
+  m_Layer: 0
+  m_Name: Patient-Bed
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2797963642694054760
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3199457730867805750}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.252, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4112341588204499451}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &4511271605468648976
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2797963642694054760}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7853336631843736379, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2abeb3d4a91ba604189dce3f95cca946, type: 2}
+    - target: {fileID: -1971271614864595861, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: d5036fc883631534fb7e35add26c2918, type: 2}
+    - target: {fileID: 919132149155446097, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_Name
+      value: Patient_Bed_Group
+      objectReference: {fileID: 0}
+    - target: {fileID: 1977305631148001048, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 19c6330dce4ce964bbe43da83b5f1e4a, type: 2}
+    - target: {fileID: 2015139882798462431, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2abeb3d4a91ba604189dce3f95cca946, type: 2}
+    - target: {fileID: 2245814894071393982, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: d5036fc883631534fb7e35add26c2918, type: 2}
+    - target: {fileID: 4460895080325788296, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0ab6e71ef3b6da748b7ca4f8c2bff5e9, type: 2}
+    - target: {fileID: 4494103916885503706, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0ab6e71ef3b6da748b7ca4f8c2bff5e9, type: 2}
+    - target: {fileID: 4938496027503499141, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2abeb3d4a91ba604189dce3f95cca946, type: 2}
+    - target: {fileID: 5409428286858945624, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2abeb3d4a91ba604189dce3f95cca946, type: 2}
+    - target: {fileID: 7327864359465583058, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0ab6e71ef3b6da748b7ca4f8c2bff5e9, type: 2}
+    - target: {fileID: 8946939962791229450, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0ab6e71ef3b6da748b7ca4f8c2bff5e9, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+--- !u!4 &4112341588204499451 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a671878a5c385d042adf0dabec1a572d, type: 3}
+  m_PrefabInstance: {fileID: 4511271605468648976}
+  m_PrefabAsset: {fileID: 0}
