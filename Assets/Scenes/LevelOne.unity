@@ -9173,7 +9173,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &705507994
 Light:
   m_ObjectHideFlags: 0
@@ -12486,6 +12486,12 @@ MonoBehaviour:
   sensX: 400
   sensY: 400
   orientation: {fileID: 328571098}
+  autoCreateHeadLight: 1
+  headLightObjectName: PlayerHeadLight
+  headLight: {fileID: 0}
+  headLightRange: 2
+  headLightIntensity: 0.05
+  headLightColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15299,7 +15305,7 @@ MonoBehaviour:
   vfxPrefab: {fileID: 8725871586106001474, guid: 4e06cb372b880aa42b454d6ada20d1e2, type: 3}
   vfxOffset: {x: 0, y: 1, z: 0}
   sonarIntervals: 0.3
-  sonarCooldown: 3
+  sonarCooldown: 1.5
   sonarSound: {fileID: 8300000, guid: b22ca754a5dfe45448fc23b5f51f4d07, type: 3}
   sonarCooldownFillImage: {fileID: 0}
   sonarCooldownBackgroundImage: {fileID: 0}
@@ -17971,7 +17977,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1206523913
 Transform:
   m_ObjectHideFlags: 0

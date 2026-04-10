@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
+    private const string SonarCanvasName = "SonarUICanvas";
+    private const string SonarRootName = "SonarCooldownUI";
+
     [Header("Movement")]
     private float moveSpeed;
     public float walkSpeed;
@@ -268,7 +271,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void EnsureSonarCooldownUI()
     {
-        if (sonarCooldownFillImage != null && sonarCooldownBackgroundImage != null)
+        if (IsExistingSonarUIValid())
         {
             if (sonarCooldownRoot == null)
             {
@@ -279,20 +282,24 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
+        sonarCooldownFillImage = null;
+        sonarCooldownBackgroundImage = null;
+        sonarCooldownRoot = null;
+
         RectTransform canvasRect = ResolveUICanvasRect();
         if (canvasRect == null)
         {
             return;
         }
 
-        Transform existingRoot = canvasRect.Find("SonarCooldownUI");
+        Transform existingRoot = canvasRect.Find(SonarRootName);
         if (existingRoot != null)
         {
             sonarCooldownRoot = existingRoot as RectTransform;
         }
         else
         {
-            GameObject rootObject = new GameObject("SonarCooldownUI", typeof(RectTransform));
+            GameObject rootObject = new GameObject(SonarRootName, typeof(RectTransform));
             sonarCooldownRoot = rootObject.GetComponent<RectTransform>();
             sonarCooldownRoot.SetParent(canvasRect, false);
         }
@@ -339,44 +346,89 @@ public class PlayerMovement : MonoBehaviour
 
     private RectTransform ResolveUICanvasRect()
     {
-        Canvas[] canvases = FindObjectsOfType<Canvas>();
         Canvas targetCanvas = null;
 
-        foreach (Canvas canvas in canvases)
+        GameObject existingCanvasObject = GameObject.Find(SonarCanvasName);
+        if (existingCanvasObject != null)
         {
-            if (!canvas.isActiveAndEnabled)
-            {
-                continue;
-            }
-
-            if (canvas.renderMode != RenderMode.WorldSpace)
-            {
-                if (HasInvisibleCanvasGroupInHierarchy(canvas.transform))
-                {
-                    continue;
-                }
-
-                targetCanvas = canvas;
-                break;
-            }
+            targetCanvas = existingCanvasObject.GetComponent<Canvas>();
         }
 
         if (targetCanvas == null)
         {
-            GameObject canvasObject = new GameObject("SonarUICanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            GameObject canvasObject = new GameObject(SonarCanvasName, typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             targetCanvas = canvasObject.GetComponent<Canvas>();
-            targetCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            targetCanvas.overrideSorting = true;
-            targetCanvas.sortingOrder = 500;
-
-            CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
-            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            scaler.matchWidthOrHeight = 0.5f;
         }
 
+        ConfigureSonarCanvas(targetCanvas);
         return targetCanvas.GetComponent<RectTransform>();
+    }
+
+    private bool IsExistingSonarUIValid()
+    {
+        if (sonarCooldownFillImage == null || sonarCooldownBackgroundImage == null)
+        {
+            return false;
+        }
+
+        if (!sonarCooldownFillImage.gameObject.activeInHierarchy || !sonarCooldownBackgroundImage.gameObject.activeInHierarchy)
+        {
+            return false;
+        }
+
+        Canvas parentCanvas = sonarCooldownFillImage.GetComponentInParent<Canvas>();
+        if (parentCanvas == null || !parentCanvas.isActiveAndEnabled || parentCanvas.renderMode == RenderMode.WorldSpace)
+        {
+            return false;
+        }
+
+        if (HasInvisibleCanvasGroupInHierarchy(sonarCooldownFillImage.transform))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void ConfigureSonarCanvas(Canvas canvas)
+    {
+        if (canvas == null)
+        {
+            return;
+        }
+
+        GameObject canvasObject = canvas.gameObject;
+        if (!canvasObject.activeSelf)
+        {
+            canvasObject.SetActive(true);
+        }
+
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.overrideSorting = true;
+        canvas.sortingOrder = 500;
+
+        CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
+        if (scaler == null)
+        {
+            scaler = canvasObject.AddComponent<CanvasScaler>();
+        }
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.matchWidthOrHeight = 0.5f;
+
+        if (canvasObject.GetComponent<GraphicRaycaster>() == null)
+        {
+            canvasObject.AddComponent<GraphicRaycaster>();
+        }
+
+        CanvasGroup canvasGroup = canvasObject.GetComponent<CanvasGroup>();
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 1f;
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+        }
     }
 
     private bool HasInvisibleCanvasGroupInHierarchy(Transform root)
@@ -409,6 +461,7 @@ public class PlayerMovement : MonoBehaviour
         root.anchoredPosition = sonarIconOffset;
         root.sizeDelta = sonarIconSize;
         root.localScale = Vector3.one;
+        root.SetAsLastSibling();
     }
 
     private void StretchToRoot(RectTransform rect)
