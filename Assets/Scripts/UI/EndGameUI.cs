@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class EndSceneTrigger : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class EndSceneTrigger : MonoBehaviour
     public CanvasGroup whiteScreenOverlay;  // UI Canvas with an Image that will turn white
     public float fadeDuration = 3f;         // Duration for the screen to fade to white
     public float soundFadeDuration = 3f;    // Duration for the sound to fade out
+    public string endingSceneName = "Ending";
 
     private bool playerInEndZone = false;
 
@@ -31,11 +33,11 @@ public class EndSceneTrigger : MonoBehaviour
         // Start fading out the sound
         StartCoroutine(FadeOutSound());
 
-        // Wait for both the fade and sound to finish before any further actions
-        yield return new WaitForSeconds(fadeDuration);
+        // Wait for both the fade and sound to finish before loading ending UI scene
+        float waitDuration = Mathf.Max(fadeDuration, soundFadeDuration);
+        yield return new WaitForSeconds(waitDuration);
 
-        // You can then load an ending scene or display the final UI, credits, etc.
-        // For example: SceneManager.LoadScene("EndingScene");
+        SceneManager.LoadScene(endingSceneName);
     }
 
     IEnumerator FadeToWhite()

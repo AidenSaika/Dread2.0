@@ -9173,7 +9173,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!108 &705507994
 Light:
   m_ObjectHideFlags: 0
@@ -12780,6 +12780,7 @@ MonoBehaviour:
   whiteScreenOverlay: {fileID: 921537380}
   fadeDuration: 3
   soundFadeDuration: 3
+  endingSceneName: Ending
 --- !u!1 &969113623
 GameObject:
   m_ObjectHideFlags: 0
@@ -15298,7 +15299,15 @@ MonoBehaviour:
   vfxPrefab: {fileID: 8725871586106001474, guid: 4e06cb372b880aa42b454d6ada20d1e2, type: 3}
   vfxOffset: {x: 0, y: 1, z: 0}
   sonarIntervals: 0.3
+  sonarCooldown: 3
   sonarSound: {fileID: 8300000, guid: b22ca754a5dfe45448fc23b5f51f4d07, type: 3}
+  sonarCooldownFillImage: {fileID: 0}
+  sonarCooldownBackgroundImage: {fileID: 0}
+  sonarIconSize: {x: 72, y: 72}
+  sonarIconOffset: {x: -32, y: 32}
+  sonarReadyColor: {r: 0.25, g: 1, b: 0.95, a: 0.95}
+  sonarCooldownColor: {r: 0.25, g: 0.75, b: 1, a: 0.45}
+  sonarBackgroundColor: {r: 0, g: 0, b: 0, a: 0.4}
   sprintKey: 304
   crouchKey: 306
   sonarKey: 101
@@ -17962,7 +17971,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1206523913
 Transform:
   m_ObjectHideFlags: 0

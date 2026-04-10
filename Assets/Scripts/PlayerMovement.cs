@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -20,7 +21,17 @@ public class PlayerMovement : MonoBehaviour
     public GameObject vfxPrefab;
     public Vector3 vfxOffset = new Vector3(0, 1, 0);
     public float sonarIntervals;
+    public float sonarCooldown = 1.5f;
     public AudioClip sonarSound;  // Sound for sonar scanning
+
+    [Header("Sonar UI")]
+    public Image sonarCooldownFillImage;
+    public Image sonarCooldownBackgroundImage;
+    public Vector2 sonarIconSize = new Vector2(72f, 72f);
+    public Vector2 sonarIconOffset = new Vector2(-32f, 32f);
+    public Color sonarReadyColor = new Color(0.25f, 1f, 0.95f, 0.95f);
+    public Color sonarCooldownColor = new Color(0.25f, 0.75f, 1f, 0.45f);
+    public Color sonarBackgroundColor = new Color(0f, 0f, 0f, 0.4f);
 
     [Header("Keybinds")]
     public KeyCode sprintKey = KeyCode.LeftShift;
@@ -56,6 +67,11 @@ public class PlayerMovement : MonoBehaviour
     public float walkFootstepInterval = 0.5f;  // Time between footsteps when walking
     public float sprintFootstepInterval = 0.3f;  // Time between footsteps when sprinting
     private float footstepTimer = 0f;  // Timer for footstep sounds
+    private float sonarCooldownTimer = 0f;
+    private RectTransform sonarCooldownRoot;
+
+    private static Sprite generatedSonarCircleSprite;
+    private static Texture2D generatedSonarCircleTexture;
 
     private void Start()
     {
@@ -63,6 +79,9 @@ public class PlayerMovement : MonoBehaviour
         rb.freezeRotation = true;
 
         startYScale = transform.localScale.y;
+        sonarCooldown = Mathf.Max(0f, sonarCooldown);
+        EnsureSonarCooldownUI();
+        UpdateSonarCooldownUI();
     }
 
     private void Update()
@@ -73,11 +92,7 @@ public class PlayerMovement : MonoBehaviour
         MyInput();
         SpeedControl();
         StateHandler();
-
-        if (Input.GetKeyDown(sonarKey))
-        {
-            SonarScan();
-        }
+        HandleSonarCooldown();
 
         // Handle drag
         if (grounded)
@@ -157,6 +172,43 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void HandleSonarCooldown()
+    {
+        if (sonarCooldownTimer > 0f)
+        {
+            sonarCooldownTimer = Mathf.Max(0f, sonarCooldownTimer - Time.deltaTime);
+        }
+
+        if (Input.GetKeyDown(sonarKey) && sonarCooldownTimer <= 0f)
+        {
+            SonarScan();
+            sonarCooldownTimer = sonarCooldown;
+        }
+
+        UpdateSonarCooldownUI();
+    }
+
+    private void UpdateSonarCooldownUI()
+    {
+        EnsureSonarCooldownUI();
+
+        if (sonarCooldownFillImage == null)
+        {
+            return;
+        }
+
+        float normalizedCooldown = sonarCooldown <= 0f ? 0f : sonarCooldownTimer / sonarCooldown;
+        bool onCooldown = sonarCooldown > 0f && sonarCooldownTimer > 0f;
+
+        sonarCooldownFillImage.fillAmount = onCooldown ? normalizedCooldown : 1f;
+        sonarCooldownFillImage.color = onCooldown ? sonarCooldownColor : sonarReadyColor;
+
+        if (sonarCooldownBackgroundImage != null)
+        {
+            sonarCooldownBackgroundImage.color = sonarBackgroundColor;
+        }
+    }
+
     private void SonarScan()
     {
         // Play sonar sound
@@ -212,5 +264,209 @@ public class PlayerMovement : MonoBehaviour
             // Reset the timer when the player is not moving or grounded
             footstepTimer = 0f;
         }
+    }
+
+    private void EnsureSonarCooldownUI()
+    {
+        if (sonarCooldownFillImage != null && sonarCooldownBackgroundImage != null)
+        {
+            if (sonarCooldownRoot == null)
+            {
+                sonarCooldownRoot = sonarCooldownFillImage.transform.parent as RectTransform;
+            }
+
+            ApplyRootLayout(sonarCooldownRoot);
+            return;
+        }
+
+        RectTransform canvasRect = ResolveUICanvasRect();
+        if (canvasRect == null)
+        {
+            return;
+        }
+
+        Transform existingRoot = canvasRect.Find("SonarCooldownUI");
+        if (existingRoot != null)
+        {
+            sonarCooldownRoot = existingRoot as RectTransform;
+        }
+        else
+        {
+            GameObject rootObject = new GameObject("SonarCooldownUI", typeof(RectTransform));
+            sonarCooldownRoot = rootObject.GetComponent<RectTransform>();
+            sonarCooldownRoot.SetParent(canvasRect, false);
+        }
+
+        ApplyRootLayout(sonarCooldownRoot);
+
+        Transform bgTransform = sonarCooldownRoot.Find("Background");
+        if (bgTransform == null)
+        {
+            GameObject bgObject = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            bgObject.transform.SetParent(sonarCooldownRoot, false);
+            bgTransform = bgObject.transform;
+        }
+
+        Transform fillTransform = sonarCooldownRoot.Find("Fill");
+        if (fillTransform == null)
+        {
+            GameObject fillObject = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            fillObject.transform.SetParent(sonarCooldownRoot, false);
+            fillTransform = fillObject.transform;
+        }
+
+        RectTransform bgRect = bgTransform as RectTransform;
+        RectTransform fillRect = fillTransform as RectTransform;
+        StretchToRoot(bgRect);
+        StretchToRoot(fillRect);
+
+        Sprite circleSprite = GetOrCreateCircleSprite();
+
+        sonarCooldownBackgroundImage = bgTransform.GetComponent<Image>();
+        sonarCooldownBackgroundImage.sprite = circleSprite;
+        sonarCooldownBackgroundImage.type = Image.Type.Simple;
+        sonarCooldownBackgroundImage.color = sonarBackgroundColor;
+        sonarCooldownBackgroundImage.raycastTarget = false;
+
+        sonarCooldownFillImage = fillTransform.GetComponent<Image>();
+        sonarCooldownFillImage.sprite = circleSprite;
+        sonarCooldownFillImage.type = Image.Type.Filled;
+        sonarCooldownFillImage.fillMethod = Image.FillMethod.Radial360;
+        sonarCooldownFillImage.fillOrigin = (int)Image.Origin360.Top;
+        sonarCooldownFillImage.fillClockwise = false;
+        sonarCooldownFillImage.raycastTarget = false;
+    }
+
+    private RectTransform ResolveUICanvasRect()
+    {
+        Canvas[] canvases = FindObjectsOfType<Canvas>();
+        Canvas targetCanvas = null;
+
+        foreach (Canvas canvas in canvases)
+        {
+            if (!canvas.isActiveAndEnabled)
+            {
+                continue;
+            }
+
+            if (canvas.renderMode != RenderMode.WorldSpace)
+            {
+                if (HasInvisibleCanvasGroupInHierarchy(canvas.transform))
+                {
+                    continue;
+                }
+
+                targetCanvas = canvas;
+                break;
+            }
+        }
+
+        if (targetCanvas == null)
+        {
+            GameObject canvasObject = new GameObject("SonarUICanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            targetCanvas = canvasObject.GetComponent<Canvas>();
+            targetCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            targetCanvas.overrideSorting = true;
+            targetCanvas.sortingOrder = 500;
+
+            CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
+        }
+
+        return targetCanvas.GetComponent<RectTransform>();
+    }
+
+    private bool HasInvisibleCanvasGroupInHierarchy(Transform root)
+    {
+        Transform current = root;
+        while (current != null)
+        {
+            CanvasGroup canvasGroup = current.GetComponent<CanvasGroup>();
+            if (canvasGroup != null && canvasGroup.alpha <= 0.01f)
+            {
+                return true;
+            }
+
+            current = current.parent;
+        }
+
+        return false;
+    }
+
+    private void ApplyRootLayout(RectTransform root)
+    {
+        if (root == null)
+        {
+            return;
+        }
+
+        root.anchorMin = new Vector2(1f, 0f);
+        root.anchorMax = new Vector2(1f, 0f);
+        root.pivot = new Vector2(1f, 0f);
+        root.anchoredPosition = sonarIconOffset;
+        root.sizeDelta = sonarIconSize;
+        root.localScale = Vector3.one;
+    }
+
+    private void StretchToRoot(RectTransform rect)
+    {
+        if (rect == null)
+        {
+            return;
+        }
+
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = Vector2.zero;
+        rect.localScale = Vector3.one;
+    }
+
+    private Sprite GetOrCreateCircleSprite()
+    {
+        if (generatedSonarCircleSprite != null)
+        {
+            return generatedSonarCircleSprite;
+        }
+
+        const int textureSize = 128;
+        generatedSonarCircleTexture = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false);
+        generatedSonarCircleTexture.name = "SonarCooldownCircleTexture";
+
+        float outerRadius = (textureSize * 0.5f) - 1f;
+        float innerRadius = outerRadius * 0.58f;
+        Vector2 center = new Vector2((textureSize - 1) * 0.5f, (textureSize - 1) * 0.5f);
+
+        Color[] pixels = new Color[textureSize * textureSize];
+
+        for (int y = 0; y < textureSize; y++)
+        {
+            for (int x = 0; x < textureSize; x++)
+            {
+                float distance = Vector2.Distance(new Vector2(x, y), center);
+
+                float outerEdgeAlpha = Mathf.Clamp01(outerRadius - distance);
+                float innerEdgeAlpha = Mathf.Clamp01(distance - innerRadius);
+                float alpha = Mathf.Min(outerEdgeAlpha, innerEdgeAlpha);
+
+                pixels[(y * textureSize) + x] = new Color(1f, 1f, 1f, alpha);
+            }
+        }
+
+        generatedSonarCircleTexture.SetPixels(pixels);
+        generatedSonarCircleTexture.Apply();
+
+        generatedSonarCircleSprite = Sprite.Create(
+            generatedSonarCircleTexture,
+            new Rect(0f, 0f, textureSize, textureSize),
+            new Vector2(0.5f, 0.5f),
+            textureSize
+        );
+
+        return generatedSonarCircleSprite;
     }
 }
