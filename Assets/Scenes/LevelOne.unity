@@ -15305,7 +15305,7 @@ MonoBehaviour:
   vfxPrefab: {fileID: 8725871586106001474, guid: 4e06cb372b880aa42b454d6ada20d1e2, type: 3}
   vfxOffset: {x: 0, y: 1, z: 0}
   sonarIntervals: 0.3
-  sonarCooldown: 1.5
+  sonarCooldown: 2
   sonarSound: {fileID: 8300000, guid: b22ca754a5dfe45448fc23b5f51f4d07, type: 3}
   sonarCooldownFillImage: {fileID: 0}
   sonarCooldownBackgroundImage: {fileID: 0}

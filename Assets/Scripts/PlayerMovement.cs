@@ -24,17 +24,20 @@ public class PlayerMovement : MonoBehaviour
     public GameObject vfxPrefab;
     public Vector3 vfxOffset = new Vector3(0, 1, 0);
     public float sonarIntervals;
-    public float sonarCooldown = 1.5f;
+    public float sonarCooldown = 2f;
     public AudioClip sonarSound;  // Sound for sonar scanning
 
     [Header("Sonar UI")]
     public Image sonarCooldownFillImage;
     public Image sonarCooldownBackgroundImage;
+    public Text sonarKeyLabel;
     public Vector2 sonarIconSize = new Vector2(72f, 72f);
     public Vector2 sonarIconOffset = new Vector2(-32f, 32f);
     public Color sonarReadyColor = new Color(0.25f, 1f, 0.95f, 0.95f);
     public Color sonarCooldownColor = new Color(0.25f, 0.75f, 1f, 0.45f);
     public Color sonarBackgroundColor = new Color(0f, 0f, 0f, 0.4f);
+    public int sonarKeyLabelFontSize = 42;
+    public Color sonarKeyLabelColor = Color.white;
 
     [Header("Keybinds")]
     public KeyCode sprintKey = KeyCode.LeftShift;
@@ -210,6 +213,13 @@ public class PlayerMovement : MonoBehaviour
         {
             sonarCooldownBackgroundImage.color = sonarBackgroundColor;
         }
+
+        if (sonarKeyLabel != null)
+        {
+            sonarKeyLabel.text = "E";
+            sonarKeyLabel.color = sonarKeyLabelColor;
+            sonarKeyLabel.fontSize = sonarKeyLabelFontSize;
+        }
     }
 
     private void SonarScan()
@@ -279,11 +289,13 @@ public class PlayerMovement : MonoBehaviour
             }
 
             ApplyRootLayout(sonarCooldownRoot);
+            EnsureSonarKeyLabel();
             return;
         }
 
         sonarCooldownFillImage = null;
         sonarCooldownBackgroundImage = null;
+        sonarKeyLabel = null;
         sonarCooldownRoot = null;
 
         RectTransform canvasRect = ResolveUICanvasRect();
@@ -342,6 +354,43 @@ public class PlayerMovement : MonoBehaviour
         sonarCooldownFillImage.fillOrigin = (int)Image.Origin360.Top;
         sonarCooldownFillImage.fillClockwise = false;
         sonarCooldownFillImage.raycastTarget = false;
+
+        EnsureSonarKeyLabel();
+    }
+
+    private void EnsureSonarKeyLabel()
+    {
+        if (sonarCooldownRoot == null)
+        {
+            return;
+        }
+
+        Transform labelTransform = sonarCooldownRoot.Find("KeyLabel");
+        if (labelTransform == null)
+        {
+            GameObject labelObject = new GameObject("KeyLabel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            labelObject.transform.SetParent(sonarCooldownRoot, false);
+            labelTransform = labelObject.transform;
+        }
+
+        RectTransform labelRect = labelTransform as RectTransform;
+        StretchToRoot(labelRect);
+
+        sonarKeyLabel = labelTransform.GetComponent<Text>();
+        sonarKeyLabel.text = "E";
+        sonarKeyLabel.alignment = TextAnchor.MiddleCenter;
+        sonarKeyLabel.horizontalOverflow = HorizontalWrapMode.Overflow;
+        sonarKeyLabel.verticalOverflow = VerticalWrapMode.Overflow;
+        sonarKeyLabel.resizeTextForBestFit = false;
+        sonarKeyLabel.fontStyle = FontStyle.Bold;
+        sonarKeyLabel.fontSize = sonarKeyLabelFontSize;
+        sonarKeyLabel.color = sonarKeyLabelColor;
+        sonarKeyLabel.raycastTarget = false;
+
+        if (sonarKeyLabel.font == null)
+        {
+            sonarKeyLabel.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        }
     }
 
     private RectTransform ResolveUICanvasRect()

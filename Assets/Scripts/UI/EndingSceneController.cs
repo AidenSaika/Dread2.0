@@ -197,7 +197,7 @@ public class EndingSceneController : MonoBehaviour
 
     private void EnsureButtonLabel(Transform buttonTransform, string labelText)
     {
-        Font uiFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        Font uiFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
         Transform labelTransform = buttonTransform.Find("Label");
         Text label = null;
