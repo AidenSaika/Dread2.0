@@ -22,12 +22,34 @@ public class DoorInteraction : MonoBehaviour
 
     void Start()
     {
+        TryResolvePlayerCamera();
+
+        if (door == null)
+        {
+            return;
+        }
+
         // Store the initial door rotation
         originalRotation = door.transform.rotation;
+        targetRotation = originalRotation;
     }
 
     void Update()
     {
+        if (door == null)
+        {
+            return;
+        }
+
+        if (playerCamera == null)
+        {
+            TryResolvePlayerCamera();
+            if (playerCamera == null)
+            {
+                return;
+            }
+        }
+
         // Detect if the player is looking at the door and pressing 'F'
         if (CheckIfPlayerLookingAtDoor() && Input.GetKeyDown(KeyCode.F))
         {
@@ -48,6 +70,11 @@ public class DoorInteraction : MonoBehaviour
     // Method to check if the player is looking at the door using raycast
     bool CheckIfPlayerLookingAtDoor()
     {
+        if (playerCamera == null || door == null)
+        {
+            return false;
+        }
+
         // Cast a ray from the player's camera forward
         Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)); // Center of the screen
         RaycastHit hit;
@@ -63,6 +90,26 @@ public class DoorInteraction : MonoBehaviour
         }
 
         return false;
+    }
+
+    private void TryResolvePlayerCamera()
+    {
+        if (playerCamera != null)
+        {
+            return;
+        }
+
+        if (Camera.main != null)
+        {
+            playerCamera = Camera.main;
+            return;
+        }
+
+#if UNITY_2023_1_OR_NEWER
+        playerCamera = FindFirstObjectByType<Camera>();
+#else
+        playerCamera = FindObjectOfType<Camera>();
+#endif
     }
 
     // Toggle the door between open and closed states, and play the corresponding sound

@@ -18,6 +18,11 @@ public class PlayerCam : MonoBehaviour
     [SerializeField, Min(0f)] private float headLightIntensity = 0.05f;
     [SerializeField] private Color headLightColor = Color.white;
 
+    [Header("Scene Bootstrap")]
+    [SerializeField] private bool prioritizeThisCamera = true;
+    [SerializeField] private float playerCameraDepth = 100f;
+    [SerializeField] private bool disableOtherAudioListeners = true;
+
     float xRotation;
     float yRotation;
 
@@ -25,6 +30,16 @@ public class PlayerCam : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        if (prioritizeThisCamera)
+        {
+            PrioritizePlayerCamera();
+        }
+
+        if (disableOtherAudioListeners)
+        {
+            EnsureSingleAudioListener();
+        }
 
         headLightRange = 2f;
         headLightIntensity = 0.05f;
@@ -45,6 +60,37 @@ public class PlayerCam : MonoBehaviour
         // rotate cam and orientation
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
         orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+    }
+
+    private void PrioritizePlayerCamera()
+    {
+        Camera cam = GetComponent<Camera>();
+        if (cam == null)
+        {
+            return;
+        }
+
+        if (!CompareTag("MainCamera"))
+        {
+            gameObject.tag = "MainCamera";
+        }
+
+        cam.depth = playerCameraDepth;
+    }
+
+    private void EnsureSingleAudioListener()
+    {
+        AudioListener ownListener = GetComponent<AudioListener>();
+        if (ownListener == null)
+        {
+            ownListener = gameObject.AddComponent<AudioListener>();
+        }
+
+        AudioListener[] listeners = FindObjectsOfType<AudioListener>(true);
+        foreach (AudioListener listener in listeners)
+        {
+            listener.enabled = listener == ownListener;
+        }
     }
 
     private void SetupHeadLight()

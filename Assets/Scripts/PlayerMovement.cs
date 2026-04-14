@@ -2,11 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class PlayerMovement : MonoBehaviour
 {
     private const string SonarCanvasName = "SonarUICanvas";
     private const string SonarRootName = "SonarCooldownUI";
+#if UNITY_EDITOR
+    private const string SonarVfxGuid = "4e06cb372b880aa42b454d6ada20d1e2";
+    private const string SonarSoundGuid = "b22ca754a5dfe45448fc23b5f51f4d07";
+    private const string WalkSoundGuid = "33aa518bf06031e46aae11b530d061f3";
+    private const string SprintSoundGuid = "d20106412c421ea44b32c6d3cd5363b1";
+#endif
 
     [Header("Movement")]
     private float moveSpeed;
@@ -79,10 +88,35 @@ public class PlayerMovement : MonoBehaviour
     private static Sprite generatedSonarCircleSprite;
     private static Texture2D generatedSonarCircleTexture;
 
+    private void Reset()
+    {
+        TryAutoAssignReferences();
+    }
+
+    private void OnValidate()
+    {
+        TryAutoAssignReferences();
+    }
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody>();
+        }
         rb.freezeRotation = true;
+
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+
+        if (orientation == null)
+        {
+            Transform orientationTransform = transform.Find("Orientation");
+            orientation = orientationTransform != null ? orientationTransform : transform;
+        }
 
         startYScale = transform.localScale.y;
         sonarCooldown = Mathf.Max(0f, sonarCooldown);
@@ -224,6 +258,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void SonarScan()
     {
+        if (vfxPrefab == null)
+        {
+            return;
+        }
+
         // Play sonar sound
         if (sonarSound != null && audioSource != null)
         {
@@ -571,4 +610,56 @@ public class PlayerMovement : MonoBehaviour
 
         return generatedSonarCircleSprite;
     }
+
+    private void TryAutoAssignReferences()
+    {
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+
+        if (orientation == null)
+        {
+            Transform orientationTransform = transform.Find("Orientation");
+            if (orientationTransform != null)
+            {
+                orientation = orientationTransform;
+            }
+        }
+
+#if UNITY_EDITOR
+        if (vfxPrefab == null)
+        {
+            vfxPrefab = LoadAssetByGuidEditor<GameObject>(SonarVfxGuid);
+        }
+
+        if (sonarSound == null)
+        {
+            sonarSound = LoadAssetByGuidEditor<AudioClip>(SonarSoundGuid);
+        }
+
+        if (walkSound == null)
+        {
+            walkSound = LoadAssetByGuidEditor<AudioClip>(WalkSoundGuid);
+        }
+
+        if (sprintSound == null)
+        {
+            sprintSound = LoadAssetByGuidEditor<AudioClip>(SprintSoundGuid);
+        }
+#endif
+    }
+
+#if UNITY_EDITOR
+    private static T LoadAssetByGuidEditor<T>(string guid) where T : UnityEngine.Object
+    {
+        string path = AssetDatabase.GUIDToAssetPath(guid);
+        if (string.IsNullOrEmpty(path))
+        {
+            return null;
+        }
+
+        return AssetDatabase.LoadAssetAtPath<T>(path);
+    }
+#endif
 }

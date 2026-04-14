@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="980" viewBox="0 0 1900 980">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eef6ff"/>
+      <stop offset="100%" stop-color="#dfeefd"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#17324f"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1900" height="980" fill="url(#bg)"/>
+  <text x="60" y="58" font-size="36" font-weight="800" fill="#0f2a4a">LevelOne Current Flow (from scene + scripts)</text>
+  <text x="60" y="92" font-size="20" fill="#23466f">Solid line = required route | Dashed line = optional item pickup</text>
+<g id="start">
+<rect x="70" y="130" width="300" height="130" rx="14" ry="14" fill="#f3f8ff" stroke="#2f5ea8" stroke-width="2.4"/>
+<text x="86" y="160" font-size="24" font-weight="700" fill="#16345f">Start: Player Spawn</text>
+<text x="86" y="188" font-size="19" fill="#1d2d44">Player @ (-3.32, 0.316, -4.8)</text>
+<text x="86" y="214" font-size="19" fill="#1d2d44">Scene: LevelOne</text>
+</g>
+<g id="doors">
+<rect x="420" y="130" width="320" height="150" rx="14" ry="14" fill="#f3f8ff" stroke="#2f5ea8" stroke-width="2.4"/>
+<text x="436" y="160" font-size="24" font-weight="700" fill="#16345f">Move & Door Interaction</text>
+<text x="436" y="188" font-size="19" fill="#1d2d44">Use F to interact with doors</text>
+<text x="436" y="214" font-size="19" fill="#1d2d44">DoorInteraction x5</text>
+<text x="436" y="240" font-size="19" fill="#1d2d44">interactionDistance: 5</text>
+</g>
+<g id="button">
+<rect x="800" y="130" width="330" height="150" rx="14" ry="14" fill="#f3f8ff" stroke="#2f5ea8" stroke-width="2.4"/>
+<text x="816" y="160" font-size="24" font-weight="700" fill="#16345f">Core Interaction: Big-Button</text>
+<text x="816" y="188" font-size="19" fill="#1d2d44">Item: Big-Button</text>
+<text x="816" y="214" font-size="19" fill="#1d2d44">Press F (distance 3)</text>
+<text x="816" y="240" font-size="19" fill="#1d2d44">Triggers gate opening</text>
+</g>
+<g id="gate">
+<rect x="1190" y="130" width="360" height="190" rx="14" ry="14" fill="#f3f8ff" stroke="#2f5ea8" stroke-width="2.4"/>
+<text x="1206" y="160" font-size="24" font-weight="700" fill="#16345f">GateSlide Event</text>
+<text x="1206" y="188" font-size="19" fill="#1d2d44">Door 1: MetalFence slides (z -5)</text>
+<text x="1206" y="214" font-size="19" fill="#1d2d44">Door 2: Final door lifts (y +5)</text>
+<text x="1206" y="240" font-size="19" fill="#1d2d44">Monster "Door Breaker 1" activated</text>
+<text x="1206" y="266" font-size="19" fill="#1d2d44">Alarm starts</text>
+</g>
+<g id="endzone">
+<rect x="1610" y="130" width="250" height="150" rx="14" ry="14" fill="#f3f8ff" stroke="#2f5ea8" stroke-width="2.4"/>
+<text x="1626" y="160" font-size="24" font-weight="700" fill="#16345f">End Trigger Zone</text>
+<text x="1626" y="188" font-size="19" fill="#1d2d44">Object: End-game point</text>
+<text x="1626" y="214" font-size="19" fill="#1d2d44">Enter trigger collider</text>
+</g>
+<g id="ending">
+<rect x="1560" y="390" width="300" height="170" rx="14" ry="14" fill="#e9fbe8" stroke="#2c7a3f" stroke-width="2.4"/>
+<text x="1576" y="420" font-size="24" font-weight="700" fill="#16345f">Goal: Ending Scene</text>
+<text x="1576" y="448" font-size="19" fill="#1d2d44">Fade to white (3s)</text>
+<text x="1576" y="474" font-size="19" fill="#1d2d44">Audio fade out (3s)</text>
+<text x="1576" y="500" font-size="19" fill="#1d2d44">Load scene: Ending</text>
+</g>
+<g id="opt1">
+<rect x="470" y="430" width="290" height="145" rx="14" ry="14" fill="#fff8ea" stroke="#b7791f" stroke-width="2.4" stroke-dasharray="8 6"/>
+<text x="486" y="460" font-size="24" font-weight="700" fill="#16345f">Optional Item A</text>
+<text x="486" y="488" font-size="19" fill="#1d2d44">CardPickup target: Sonar</text>
+<text x="486" y="514" font-size="19" fill="#1d2d44">Press F within range 3</text>
+<text x="486" y="540" font-size="19" fill="#1d2d44">Current logic: collect only</text>
+</g>
+<g id="opt2">
+<rect x="820" y="430" width="330" height="145" rx="14" ry="14" fill="#fff8ea" stroke="#b7791f" stroke-width="2.4" stroke-dasharray="8 6"/>
+<text x="836" y="460" font-size="24" font-weight="700" fill="#16345f">Optional Item B</text>
+<text x="836" y="488" font-size="19" fill="#1d2d44">CardPickup target: Card-Holder/ID-Card</text>
+<text x="836" y="514" font-size="19" fill="#1d2d44">Press F within range 3</text>
+<text x="836" y="540" font-size="19" fill="#1d2d44">Current logic: collect only</text>
+</g>
+<line x1="370" y1="195" x2="420" y2="205" stroke="#17324f" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="740" y1="205" x2="800" y2="205" stroke="#17324f" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="1130" y1="205" x2="1190" y2="225" stroke="#17324f" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="1550" y1="225" x2="1610" y2="205" stroke="#17324f" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="1735" y1="280" x2="1710" y2="390" stroke="#17324f" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="575" y1="280" x2="610" y2="430" stroke="#17324f" stroke-width="3" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<line x1="650" y1="503" x2="800" y2="220" stroke="#17324f" stroke-width="3" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<line x1="740" y1="250" x2="910" y2="430" stroke="#17324f" stroke-width="3" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<line x1="990" y1="503" x2="960" y2="280" stroke="#17324f" stroke-width="3" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<rect x="70" y="760" width="1760" height="165" rx="14" ry="14" fill="#f8fbff" stroke="#9eb7d6" stroke-width="1.8"/>
+<text x="95" y="805" font-size="24" font-weight="700" fill="#183a63">Key notes extracted from current project</text>
+<text x="95" y="842" font-size="20" fill="#1d2d44">1) CardPickup currently destroys item only; no card-door dependency in scripts.</text>
+<text x="95" y="874" font-size="20" fill="#1d2d44">2) Gate opening and monster activation are tied to Big-Button (same trigger).</text>
+<text x="95" y="906" font-size="20" fill="#1d2d44">3) Final completion occurs when player enters End-game point and scene switches to Ending.</text>
+</svg>
