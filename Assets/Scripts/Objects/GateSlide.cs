@@ -25,8 +25,18 @@ public class GateSlide : MonoBehaviour
     private Vector3 targetDoorPosition;
     private bool doorOpening = false;
 
+    void Awake()
+    {
+        TryResolvePlayerCamera();
+    }
+
     void Start()
     {
+        if (door == null)
+        {
+            return;
+        }
+
         // Store the initial door position
         originalDoorPosition = door.transform.position;
         // Set the target position to the right of the original position
@@ -35,6 +45,11 @@ public class GateSlide : MonoBehaviour
 
     void Update()
     {
+        if (playerCamera == null)
+        {
+            TryResolvePlayerCamera();
+        }
+
         // Detect if the player is looking at the button and pressing 'F'
         if (CheckIfPlayerLookingAtButton() && Input.GetKeyDown(KeyCode.F) && !isButtonPressed)
         {
@@ -46,14 +61,17 @@ public class GateSlide : MonoBehaviour
                 audioSource.PlayOneShot(doorSlideSound);
             }
             // Debug.Log("Button pressed, door will open");
-            Monster.SetActive(true);
+            if (Monster != null)
+            {
+                Monster.SetActive(true);
+            }
 
             // Start the alarm sound with a delay and set it to loop
             StartCoroutine(PlayAlarmSoundWithDelay(3f));  // 3 seconds delay for the alarm
         }
 
         // If the door is opening, move it to the target position
-        if (doorOpening)
+        if (doorOpening && door != null)
         {
             door.transform.position = Vector3.Lerp(door.transform.position, targetDoorPosition, Time.deltaTime * doorSlideSpeed);
             // Check if the door has reached the target position
@@ -67,6 +85,11 @@ public class GateSlide : MonoBehaviour
     // Method to check if the player is looking at the button using raycast
     bool CheckIfPlayerLookingAtButton()
     {
+        if (playerCamera == null || button == null)
+        {
+            return false;
+        }
+
         Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)); // Center of the screen
         RaycastHit hit;
 
@@ -82,6 +105,26 @@ public class GateSlide : MonoBehaviour
         }
 
         return false;
+    }
+
+    private void TryResolvePlayerCamera()
+    {
+        if (playerCamera != null)
+        {
+            return;
+        }
+
+        if (Camera.main != null)
+        {
+            playerCamera = Camera.main;
+            return;
+        }
+
+#if UNITY_2023_1_OR_NEWER
+        playerCamera = FindFirstObjectByType<Camera>();
+#else
+        playerCamera = FindObjectOfType<Camera>();
+#endif
     }
 
     // Coroutine to play the alarm sound after a delay

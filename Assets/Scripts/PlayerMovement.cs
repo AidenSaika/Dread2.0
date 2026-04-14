@@ -83,6 +83,8 @@ public class PlayerMovement : MonoBehaviour
     public float sprintFootstepInterval = 0.3f;  // Time between footsteps when sprinting
     private float footstepTimer = 0f;  // Timer for footstep sounds
     private float sonarCooldownTimer = 0f;
+    private Coroutine sonarBurstRoutine;
+    private readonly List<GameObject> activeSonarVfxInstances = new List<GameObject>();
     private RectTransform sonarCooldownRoot;
 
     private static Sprite generatedSonarCircleSprite;
@@ -263,6 +265,8 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
+        ClearPreviousSonarBursts();
+
         // Play sonar sound
         if (sonarSound != null && audioSource != null)
         {
@@ -271,22 +275,60 @@ public class PlayerMovement : MonoBehaviour
 
         // Visual effect for sonar scan
         Vector3 spawnPosition = transform.position + vfxOffset;
-        Instantiate(vfxPrefab, spawnPosition, Quaternion.identity);
+        SpawnSonarBurst(spawnPosition);
 
-        StartCoroutine(SpawnAdditionalVFX(spawnPosition));
+        sonarBurstRoutine = StartCoroutine(SpawnAdditionalVFX(spawnPosition));
     }
 
     private IEnumerator SpawnAdditionalVFX(Vector3 initialPosition)
     {
         yield return new WaitForSeconds(sonarIntervals);
 
-        Vector3 secondPosition = initialPosition;
-        Instantiate(vfxPrefab, secondPosition, Quaternion.identity);
+        SpawnSonarBurst(initialPosition);
 
         yield return new WaitForSeconds(sonarIntervals);
 
-        Vector3 thirdPosition = initialPosition;
-        Instantiate(vfxPrefab, thirdPosition, Quaternion.identity);
+        SpawnSonarBurst(initialPosition);
+        sonarBurstRoutine = null;
+    }
+
+    private void SpawnSonarBurst(Vector3 position)
+    {
+        if (vfxPrefab == null)
+        {
+            return;
+        }
+
+        GameObject burst = Instantiate(vfxPrefab, position, Quaternion.identity);
+        if (burst != null)
+        {
+            activeSonarVfxInstances.Add(burst);
+        }
+    }
+
+    private void ClearPreviousSonarBursts()
+    {
+        if (sonarBurstRoutine != null)
+        {
+            StopCoroutine(sonarBurstRoutine);
+            sonarBurstRoutine = null;
+        }
+
+        for (int i = 0; i < activeSonarVfxInstances.Count; i++)
+        {
+            GameObject burst = activeSonarVfxInstances[i];
+            if (burst != null)
+            {
+                Destroy(burst);
+            }
+        }
+
+        activeSonarVfxInstances.Clear();
+    }
+
+    private void OnDisable()
+    {
+        ClearPreviousSonarBursts();
     }
 
     private void PlayFootstepSounds()

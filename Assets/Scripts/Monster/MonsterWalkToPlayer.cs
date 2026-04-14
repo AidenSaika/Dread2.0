@@ -24,16 +24,35 @@ public class MonsterWalkToPlayer : MonoBehaviour
 
     private float footstepTimer = 0f; // Timer for footstep intervals
 
+    void Awake()
+    {
+        TryResolvePlayer();
+    }
+
     void Start()
     {
         previousPosition = transform.position;
-        footstepAudioSource.clip = footstepSound; // Assign the footstep sound to the AudioSource
+
+        if (footstepAudioSource != null)
+        {
+            footstepAudioSource.clip = footstepSound; // Assign the footstep sound to the AudioSource
+        }
     }
 
     void Update()
     {
+        if (player == null)
+        {
+            TryResolvePlayer();
+        }
+
         if (playerInZone && Input.GetKeyDown(KeyCode.E))
         {
+            if (player == null)
+            {
+                return;
+            }
+
             // Set target position to player's position, but keep monster's Y position unchanged
             targetPosition = new Vector3(player.position.x, transform.position.y, player.position.z);
             moveToTarget = true;
@@ -81,7 +100,7 @@ public class MonsterWalkToPlayer : MonoBehaviour
 
             // Play footstep sounds at intervals
             footstepTimer += Time.deltaTime;
-            if (footstepTimer >= footstepInterval)
+            if (footstepTimer >= footstepInterval && footstepAudioSource != null)
             {
                 footstepAudioSource.Play();  // Play footstep sound
                 footstepTimer = 0f;  // Reset timer
@@ -93,7 +112,11 @@ public class MonsterWalkToPlayer : MonoBehaviour
             {
                 animator.enabled = false;
             }
-            footstepAudioSource.Stop(); // Stop footstep sounds when not moving
+
+            if (footstepAudioSource != null)
+            {
+                footstepAudioSource.Stop(); // Stop footstep sounds when not moving
+            }
         }
 
         previousPosition = transform.position;
@@ -114,6 +137,31 @@ public class MonsterWalkToPlayer : MonoBehaviour
         {
             playerInZone = false;
             Debug.Log("Player left interaction zone.");
+        }
+    }
+
+    private void TryResolvePlayer()
+    {
+        if (player != null)
+        {
+            return;
+        }
+
+        GameObject playerByTag = GameObject.FindGameObjectWithTag("Player");
+        if (playerByTag != null)
+        {
+            player = playerByTag.transform;
+            return;
+        }
+
+#if UNITY_2023_1_OR_NEWER
+        PlayerMovement movement = FindFirstObjectByType<PlayerMovement>();
+#else
+        PlayerMovement movement = FindObjectOfType<PlayerMovement>();
+#endif
+        if (movement != null)
+        {
+            player = movement.transform;
         }
     }
 }

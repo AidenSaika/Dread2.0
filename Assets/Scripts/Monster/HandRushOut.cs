@@ -19,12 +19,32 @@ public class HandRushOut : MonoBehaviour
     private Vector3 rushStartPosition;
     private Vector3 rushTargetPosition;
 
+    void Awake()
+    {
+        TryResolvePlayer();
+    }
+
     void Update()
     {
+        if (hasRushed)
+        {
+            return;
+        }
+
+        if (player == null)
+        {
+            TryResolvePlayer();
+            if (player == null)
+            {
+                return;
+            }
+        }
+
         // Check if the player is within the trigger range
         if (!playerInTriggerZone && Vector3.Distance(player.position, transform.position) <= triggerRange)
         {
             playerInTriggerZone = true;
+            hasRushed = true;
             StartCoroutine(RushOutAndGrab());
         }
     }
@@ -62,5 +82,30 @@ public class HandRushOut : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, triggerRange);
+    }
+
+    private void TryResolvePlayer()
+    {
+        if (player != null)
+        {
+            return;
+        }
+
+        GameObject playerByTag = GameObject.FindGameObjectWithTag("Player");
+        if (playerByTag != null)
+        {
+            player = playerByTag.transform;
+            return;
+        }
+
+#if UNITY_2023_1_OR_NEWER
+        PlayerMovement movement = FindFirstObjectByType<PlayerMovement>();
+#else
+        PlayerMovement movement = FindObjectOfType<PlayerMovement>();
+#endif
+        if (movement != null)
+        {
+            player = movement.transform;
+        }
     }
 }

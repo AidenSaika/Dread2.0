@@ -37,21 +37,29 @@ public class MonsterChase : MonoBehaviour
     private Vector3 rushTargetPosition;
     private float footstepTimer = 0f; // Timer for controlling footstep interval
 
+    void Awake()
+    {
+        TryResolvePlayer();
+    }
+
     void Start()
     {
-        // Get all the AudioSource components attached to the player
-        AudioSource[] playerAudioSources = player.GetComponents<AudioSource>();
-
-        if (playerAudioSources.Length >= 3)
-        {
-            playerBreathingAudio = playerAudioSources[2];
-            playerHeartbeatAudio = playerAudioSources[1];
-            playerGeneralAudio = playerAudioSources[0];
-        }
+        TryResolvePlayer();
+        ResolvePlayerAudioSources();
     }
 
     void Update()
     {
+        if (player == null)
+        {
+            TryResolvePlayer();
+            ResolvePlayerAudioSources();
+            if (player == null)
+            {
+                return;
+            }
+        }
+
         // Check if the player is within the trigger range
         if (!playerInTriggerZone && Vector3.Distance(player.position, transform.position) <= triggerRange)
         {
@@ -85,7 +93,10 @@ public class MonsterChase : MonoBehaviour
             PlayFootstepSound();
         }
 
-        hand.SetActive(true);
+        if (hand != null)
+        {
+            hand.SetActive(true);
+        }
     }
 
     // Coroutine to handle the rush out of the door
@@ -139,6 +150,8 @@ public class MonsterChase : MonoBehaviour
 
     private void PlayPlayerSounds()
     {
+        ResolvePlayerAudioSources();
+
         if (playerBreathingAudio != null && breathingSound != null)
         {
             playerBreathingAudio.clip = breathingSound;
@@ -158,5 +171,54 @@ public class MonsterChase : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, triggerRange);
+    }
+
+    private void TryResolvePlayer()
+    {
+        if (player != null)
+        {
+            return;
+        }
+
+        GameObject playerByTag = GameObject.FindGameObjectWithTag("Player");
+        if (playerByTag != null)
+        {
+            player = playerByTag.transform;
+            return;
+        }
+
+#if UNITY_2023_1_OR_NEWER
+        PlayerMovement movement = FindFirstObjectByType<PlayerMovement>();
+#else
+        PlayerMovement movement = FindObjectOfType<PlayerMovement>();
+#endif
+        if (movement != null)
+        {
+            player = movement.transform;
+        }
+    }
+
+    private void ResolvePlayerAudioSources()
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        AudioSource[] playerAudioSources = player.GetComponents<AudioSource>();
+        if (playerAudioSources.Length > 0 && playerGeneralAudio == null)
+        {
+            playerGeneralAudio = playerAudioSources[0];
+        }
+
+        if (playerAudioSources.Length > 1 && playerHeartbeatAudio == null)
+        {
+            playerHeartbeatAudio = playerAudioSources[1];
+        }
+
+        if (playerAudioSources.Length > 2 && playerBreathingAudio == null)
+        {
+            playerBreathingAudio = playerAudioSources[2];
+        }
     }
 }
